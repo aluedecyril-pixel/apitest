@@ -1,0 +1,617 @@
+{
+	"info": {
+		"_postman_id": "45721dfe-152c-422a-85c6-f9a8704c2bd2",
+		"name": "Simple_Grocery_Store",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21110422"
+	},
+	"item": [
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Get all products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Confirm status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });\r",
+									"\r",
+									"//Confirm response is in an array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"    });\r",
+									"\r",
+									"//Confirm that response contain at least 1 item\r",
+									" pm.test(\"Response contains at least 1 item\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);\r",
+									"    });\r",
+									"\r",
+									"//Set product_id as a variable\r",
+									"pm.test(\"Set product_id as a variable\", function () {\r",
+									"    // Get the response data as JSON\r",
+									"    const response = pm.response.json(); \r",
+									"\r",
+									"    //Filter only in-stock productIds\r",
+									"    const inStockProducts = response.filter(product => product.inStock === true);\r",
+									"\r",
+									"    //Test to make sure there are at least 2 products in stock\r",
+									"    pm.test(\"There are at least 2 in-stock products\", function () {\r",
+									"        pm.expect(inStockProducts.length).to.be.greaterThan(1);\r",
+									"    });\r",
+									"\r",
+									"    //pick 2 random products\r",
+									" const index1 = Math.floor(Math.random() * inStockProducts.length);\r",
+									" let index2 = Math.floor(Math.random()* inStockProducts.length);\r",
+									"    \r",
+									"    // Confirm the indices are different\r",
+									"    while (index2 === index1) {\r",
+									"        index2 = Math.floor(Math.random()* inStockProducts.length);\r",
+									"    }\r",
+									"    const product_id1 = inStockProducts[index1].id;\r",
+									"    const product_id2 = inStockProducts[index2].id;\r",
+									"    \r",
+									"    console.log(product_id1, product_id2);\r",
+									"    // Set the product_id as a collection variable\r",
+									"    pm.collectionVariables.set(\"product_id1\", product_id1);\r",
+									"    pm.collectionVariables.set(\"product_id2\", product_id2);\r",
+									"});\r",
+									"//Setting setNextRequest\r",
+									"pm.execution.setNextRequest(\"Get a Single Product\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Single Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Confirm status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//Assert response has expected property\r",
+									"const product = pm.response.json();\r",
+									"pm.test(\"Response property is valid\", function () {\r",
+									"  pm.expect(product).to.have.property(\"id\").to.be.a(\"number\");\r",
+									"  pm.expect(product).to.have.property(\"category\").to.be.a(\"string\");\r",
+									"  pm.expect(product).to.have.property(\"name\").to.be.a(\"string\");\r",
+									"  pm.expect(product).to.have.property(\"manufacturer\").to.be.a(\"string\");\r",
+									"  pm.expect(product).to.have.property(\"price\").to.be.a(\"number\");\r",
+									"  pm.expect(product).to.have.property(\"current-stock\").to.be.a(\"number\");\r",
+									"  pm.expect(product).to.have.property(\"inStock\").to.be.a(\"boolean\");\r",
+									"});\r",
+									"console.log(pm.response.json());\r",
+									"//Setting setNextRequest\r",
+									"pm.execution.setNextRequest(\"Create a New Cart\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products/{{product_id1}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"{{product_id1}}"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "coffee",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Create a New Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Confirm status code\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"//Assert Cart is created\r",
+									"const cart = pm.response.json();\r",
+									"pm.test(\"Cart created successfully\", function () {\r",
+									"    pm.expect(cart.created).to.be.true;\r",
+									"});\r",
+									"\r",
+									"//Cart is not empty and has expected property.\r",
+									"pm.test(\"Cart ID is not empty and has expecetd property\", function () {\r",
+									"    pm.expect(cart.cartId).to.not.be.empty; \r",
+									"});\r",
+									"//Assert response has expected property\r",
+									"pm.test(\"Response has expected property\", function () {\r",
+									"    pm.expect(cart).to.have.property(\"created\").to.be.a(\"boolean\");\r",
+									"    pm.expect(cart).to.have.property(\"cartId\").to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"//Set cartId as a variable\r",
+									"pm.test(\"Set cartId as a variable\", function () {\r",
+									"    pm.collectionVariables.set(\"cartId\", cart.cartId);\r",
+									"});\r",
+									"console.log(pm.response.json());\r",
+									"//Setting setNextRequest\r",
+									"pm.execution.setNextRequest(\"Add an Item to Cart\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/carts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add an Item to Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Confirm status code",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const item = pm.response.json();",
+									"",
+									"//Confirm Item is added successfully",
+									"pm.test(\"Item is added successfully\", function () {",
+									"    pm.expect(item.created).to.be.true;",
+									"});",
+									"",
+									"//Confirm Item ID is returned",
+									"pm.test(\"Item ID is returned\", function () {",
+									"    pm.expect(item.itemId).to.not.be.null;",
+									"});",
+									"",
+									"//Assert response has expected property",
+									"pm.test(\"Response has expected properties\", function () {",
+									"    pm.expect(item).to.have.property(\"created\").to.be.a(\"boolean\");",
+									"    pm.expect(item).to.have.property(\"itemId\").to.be.a(\"number\");",
+									"});",
+									"",
+									"//Confirm productId and quantity are correct",
+									"// pm.test(\"Product ID is correct\", function () {",
+									"//     pm.expect(item.productId).to.eql(pm.collectionVariables.get(\"currentProductId\"));",
+									"// });",
+									"",
+									"//Set itemId as a variable",
+									"pm.test(\"Set itemId as a variable\", function () {",
+									"    pm.collectionVariables.set(\"itemId\", item.itemId);",
+									"});",
+									"",
+									"console.log(pm.response.json());",
+									"",
+									"//Confirm the Item cannot be added again",
+									"const statusCode = pm.response.code;",
+									"pm.test(\"Item cannot be added again\", function () {",
+									"    if (statusCode === 400) {",
+									"        pm.expect(item).to.have.property(\"error\");",
+									"        pm.expect(item.error).to.equal(\"This product has already been added to cart.\");",
+									"        pm.expect(item.error).to.be.a(\"string\");",
+									"    } else {",
+									"        console.log(\"Item was added to cart\");",
+									"    }",
+									"});",
+									"// //Confirm Item was added to cart with success",
+									"// const isValidItem =",
+									"//     statusCode === 201 &&",
+									"//     item &&",
+									"//     item.created === true &&",
+									"//     item.itemId;",
+									"",
+									"// // Get index and product list/Product loop setup",
+									"// let index = pm.collectionVariables.get(\"productIndex\");",
+									"// index = index === null ? 0 : Number(index);",
+									"",
+									"// const productIds = [",
+									"//     pm.collectionVariables.get(\"product_id1\"),",
+									"//     pm.collectionVariables.get(\"product_id2\")",
+									"// ];",
+									"",
+									"// let nextRequest = null",
+									"// // If response is invalid, try next product",
+									"// if (!isValidItem) {",
+									"//     console.log(\"Invalid item response. Trying next product ID.\");",
+									"",
+									"//     index++;",
+									"",
+									"//     if (index < productIds.length) {",
+									"//         pm.collectionVariables.set(\"productIndex\", index);",
+									"//         nextRequest = pm.info.requestName;",
+									"//     } else {",
+									"//         pm.expect.fail(\"All product IDs failed to add to cart\");",
+									"//     }",
+									"// }",
+									"// // If response is valid, move forward in flow",
+									"// else {",
+									"//     pm.collectionVariables.set(\"itemId\", item.itemId);",
+									"//     pm.collectionVariables.unset(\"productIndex\");",
+									"",
+									"//     pm.collectionVariables.set(\"cartFlowStep\", \"afterAdd\");",
+									"//     nextRequest = \"Get cart items\";",
+									"// }",
+									"",
+									"",
+									"// Move forward in the flow",
+									"pm.collectionVariables.set(\"cartFlowStep\", \"afterAdd\");",
+									"pm.execution.setNextRequest(\"Get cart items\");",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const productId =\r",
+									"    pm.collectionVariables.get(\"product_id1\") ||\r",
+									"    pm.collectionVariables.get(\"product_id2\");\r",
+									"\r",
+									"if (!productId) {\r",
+									"    pm.expect.fail(\"product_id is not set. Get all products must run first.\");\r",
+									"}\r",
+									"\r",
+									"pm.collectionVariables.set(\"currentProductId\", Number(productId));\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productId\": {{currentProductId}},\r\n  \"quantity\": 2\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/carts/{{cartId}}/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cart items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Confirm status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const cartItems = pm.response.json();\r",
+									"console.log(cartItems)\r",
+									"\r",
+									"//Confirm that the cart contains items.\r",
+									"if (!cartItems || cartItems.length === 0) {\r",
+									"    console.log(\"No items in cart\");\r",
+									"} else {\r",
+									"    //Confirm that the cart contains items\r",
+									"    pm.test(\"Cart contains items\", function () {\r",
+									"      pm.expect(cartItems).to.have.length.above(0);\r",
+									"    });\r",
+									"\r",
+									"    //Confirm that the item quantity is correct.\r",
+									"    pm.test(\"Item quantity is correct\", function () {\r",
+									"        pm.expect(cartItems[0].quantity).to.greaterThan(0);\r",
+									"    });\r",
+									"\r",
+									"    //Cofirm the product_id\r",
+									"    pm.test(\"Product ID is correct\", function () {\r",
+									"        pm.expect(cartItems[0].productId).to.equal(pm.collectionVariables.get(\"currentProductId\"));\r",
+									"    });\r",
+									"};    \r",
+									"//Setting setNextRequest\r",
+									"const step = pm.collectionVariables.get(\"cartFlowStep\");\r",
+									"\r",
+									"if (step === \"afterAdd\") {\r",
+									"    pm.execution.setNextRequest(\"Modify an item in the cart\");\r",
+									"} \r",
+									"else if (step === \"afterUpdate\") {\r",
+									"    pm.execution.setNextRequest(\"Delete an item in the cart\");\r",
+									"} \r",
+									"else {\r",
+									"    pm.execution.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/carts/{{cartId}}/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"carts",
+								"{{cartId}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Confirm that the response status code is 204 (No Content) when updating the item quantity.\r",
+									"pm.test(\"Quantity updated successfully\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"//Setting setNextRequest\r",
+									"pm.collectionVariables.set(\"cartFlowStep\", \"afterUpdate\");\r",
+									"pm.execution.setNextRequest(\"Get cart items\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productId\": {{currentProductId}},\r\n  \"quantity\": 2\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/carts/{{cartId}}/items/{{itemId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"carts",
+								"{{cartId}}",
+								"items",
+								"{{itemId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Confirm Item is deleted successfully\r",
+									"pm.test(\"Item deleted successfully\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"// Clear flow flag so Delete does not repeat\r",
+									"pm.collectionVariables.unset(\"cartFlowStep\");\r",
+									"// Set next request to Get cart items to verify deletion\r",
+									"pm.execution.setNextRequest(\"Get cart items\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/carts/{{cartId}}/items/{{itemId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"carts",
+								"{{cartId}}",
+								"items",
+								"{{itemId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"//console.clear()"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://simple-grocery-store-api.click"
+		},
+		{
+			"key": "cartId",
+			"value": ""
+		},
+		{
+			"key": "itemId",
+			"value": ""
+		},
+		{
+			"key": "product_id1",
+			"value": ""
+		},
+		{
+			"key": "product_id2",
+			"value": ""
+		},
+		{
+			"key": "currentProductId",
+			"value": ""
+		},
+		{
+			"key": "productIndex",
+			"value": ""
+		},
+		{
+			"key": "cartFlowStep",
+			"value": ""
+		}
+	]
+}
